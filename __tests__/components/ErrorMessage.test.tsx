@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { ErrorMessage } from './ErrorMessage';
+import { ErrorMessage } from '@/components/Error/ErrorMessage';
 
 describe('ErrorMessage', () => {
     test('renders error message passed as prop', () => {

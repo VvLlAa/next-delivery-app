@@ -13,6 +13,7 @@ const config: Config = {
   },
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
   transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
+  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$',
 };
 
 export default config;

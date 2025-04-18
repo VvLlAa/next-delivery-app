@@ -43,8 +43,11 @@ export interface SenderAndRecipientType {
 
 export interface LocationType {
   code: number;
+  city_uuid: string;
   city: string;
   country: string;
+  country_code: string;
+  region_code: number;
   region: string;
   longitude: number;
   address: string;
@@ -52,6 +55,7 @@ export interface LocationType {
 
 export interface ServiceType {
   code: string;
+  parameter: string;
   sum: number;
   total_sum: number;
   discount_sum: number;

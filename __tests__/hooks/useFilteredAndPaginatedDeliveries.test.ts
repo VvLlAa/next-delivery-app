@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { useRouter } from 'next/router';
-import { useFilteredAndPaginatedDeliveries } from './useFilteredAndPaginatedDeliveries';
+import { useFilteredAndPaginatedDeliveries } from '@/hooks/useFilteredAndPaginatedDeliveries';
 
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),

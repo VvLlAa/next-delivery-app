@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Delivery, DeliveryDetails } from '@/type/type';
 
 export const mockDeliveries: Delivery[] = [
@@ -229,9 +230,7 @@ export const mockDeliveryDetails = (id: string): DeliveryDetails => {
         region: 'Московская область',
         region_code: 7,
         longitude: 39.356765,
-        latitude: 46.313532,
         address: 'Россия, Московская область, Москва, ул. Станционная, 2',
-        postal_code: '212345',
       },
       to_location: {
         code: 1607,
@@ -242,9 +241,7 @@ export const mockDeliveryDetails = (id: string): DeliveryDetails => {
         region: 'Краснодарский край',
         region_code: 7,
         longitude: 38.975312,
-        latitude: 45.035471,
         address: 'улица Тихая 7',
-        postal_code: '545906',
       },
       services: [
         {
@@ -252,15 +249,12 @@ export const mockDeliveryDetails = (id: string): DeliveryDetails => {
           parameter: '300.00',
           sum: 2.14,
           total_sum: 2.25,
-          discount_percent: 0,
           discount_sum: 0.0,
-          vat_rate: 5.0,
           vat_sum: 0.11,
         },
       ],
       packages: [
         {
-          number: '1',
           barcode: '000513478230',
           weight: 200,
           length: 20,

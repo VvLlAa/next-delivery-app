@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { useRouter } from 'next/router';
-import useSyncWithRouter from './useSyncWithRouter';
+import useSyncWithRouter from '@/hooks/useSyncWithRouter';
 
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),
