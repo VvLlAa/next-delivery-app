@@ -19,8 +19,8 @@ describe('useSyncWithRouter', () => {
 
   it('calls router.push with page=1 when queryParam is set', () => {
     const { rerender } = renderHook(
-      ({ queryParam, page }: { queryParam: string | null; page: number }) =>
-        useSyncWithRouter(queryParam, page),
+      ({ queryParam }: { queryParam: string | null}) =>
+        useSyncWithRouter(queryParam),
       {
         initialProps: { queryParam: null, page: 1 } as {
           queryParam: string | null;
@@ -37,8 +37,8 @@ describe('useSyncWithRouter', () => {
 
   it('calls router.push when queryParam is set to null', () => {
     const { rerender } = renderHook(
-      ({ queryParam, page }: { queryParam: string | null; page: number }) =>
-        useSyncWithRouter(queryParam, page),
+      ({ queryParam }: { queryParam: string | null}) =>
+        useSyncWithRouter(queryParam),
       {
         initialProps: { queryParam: 'в пути', page: 1 } as {
           queryParam: string | null;
