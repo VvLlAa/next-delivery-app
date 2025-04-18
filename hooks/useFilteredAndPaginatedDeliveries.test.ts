@@ -1,106 +1,146 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import { useFilteredAndPaginatedDeliveries } from '@/hooks/useFilteredAndPaginatedDeliveries';
-import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+import { renderHook } from '@testing-library/react';
 import { useRouter } from 'next/router';
-
-// Моковые данные
-const mockDeliveries = [
-    { id: 1, name: 'Доставка 1', status: 'delivered' },
-    { id: 2, name: 'Доставка 2', status: 'pending' },
-    { id: 3, name: 'Доставка 3', status: 'delivered' },
-    { id: 4, name: 'Доставка 4', status: 'pending' },
-    { id: 5, name: 'Доставка 5', status: 'delivered' },
-    { id: 6, name: 'Доставка 6', status: 'pending' },
-];
-
-const mockStore = configureStore({
-    reducer: {
-        mainStore: () => ({
-            deliveries: mockDeliveries,
-            error: null,
-        }),
-    },
-});
+import { useFilteredAndPaginatedDeliveries } from './useFilteredAndPaginatedDeliveries';
 
 jest.mock('next/router', () => ({
-    useRouter: jest.fn(),
+  useRouter: jest.fn(),
 }));
 
-const MockComponent = ({ selectedFilter }: { selectedFilter: string | null }) => {
-    const { filteredDeliveries, paginatedDeliveries } = useFilteredAndPaginatedDeliveries(mockDeliveries, selectedFilter);
-
-    return (
-        <div>
-            <h1>Список доставок</h1>
-            <ul>
-                {paginatedDeliveries.map((delivery) => (
-                    <li key={delivery.id}>{delivery.name}</li>
-                ))}
-            </ul>
-        </div>
-    );
-};
-
 describe('useFilteredAndPaginatedDeliveries', () => {
-    it('должен корректно фильтровать и пагинировать доставку', async () => {
-        // Инициализируем начальную страницу как 1
-        (useRouter as jest.Mock).mockReturnValue({
-            query: { page: '1' },
-        });
+  const mockDeliveries = [
+    {
+      id: '1',
+      status: 'в пути',
+      createdAt: '2023-01-01',
+      fromAddress: 'Москва',
+      toAddress: 'СПб',
+    },
+    {
+      id: '2',
+      status: 'доставлено',
+      createdAt: '2023-01-02',
+      fromAddress: 'Москва',
+      toAddress: 'Новосибирск',
+    },
+    {
+      id: '3',
+      status: 'в пути',
+      createdAt: '2023-01-03',
+      fromAddress: 'СПб',
+      toAddress: 'Москва',
+    },
+    {
+      id: '4',
+      status: 'доставлено',
+      createdAt: '2023-01-04',
+      fromAddress: 'СПб',
+      toAddress: 'Екатеринбург',
+    },
+    {
+      id: '5',
+      status: 'в пути',
+      createdAt: '2023-01-05',
+      fromAddress: 'Екатеринбург',
+      toAddress: 'Москва',
+    },
+    {
+      id: '6',
+      status: 'доставлено',
+      createdAt: '2023-01-06',
+      fromAddress: 'Москва',
+      toAddress: 'Томск',
+    },
+  ];
 
-        render(
-            <Provider store={mockStore}>
-                <MockComponent selectedFilter={null} />
-            </Provider>
-        );
+  beforeEach(() => {
+    (useRouter as jest.Mock).mockReturnValue({
+      query: { page: '1' },
+      push: jest.fn(),
+    });
+  });
 
-        // Проверяем, что на первой странице отображаются только первые 5 доставок
-        expect(screen.getByText('Доставка 1')).toBeInTheDocument();
-        expect(screen.getByText('Доставка 2')).toBeInTheDocument();
-        expect(screen.getByText('Доставка 3')).toBeInTheDocument();
-        expect(screen.getByText('Доставка 4')).toBeInTheDocument();
-        expect(screen.getByText('Доставка 5')).toBeInTheDocument();
+  it('returns all deliveries without filter', () => {
+    const { result } = renderHook(() =>
+      useFilteredAndPaginatedDeliveries(mockDeliveries, null)
+    );
 
-        // Проверяем, что на первой странице не отображаются другие элементы
-        expect(screen.queryByText('Доставка 6')).not.toBeInTheDocument();
+    expect(result.current.filteredDeliveries).toEqual(mockDeliveries);
+    expect(result.current.paginatedDeliveries).toEqual(
+      mockDeliveries.slice(0, 5)
+    );
+  });
 
-        // Мокаем изменение страницы на 2
-        (useRouter as jest.Mock).mockReturnValue({
-            query: { page: '2' },
-        });
+  it('correctly filters deliveries by status', () => {
+    const { result } = renderHook(() =>
+      useFilteredAndPaginatedDeliveries(mockDeliveries, 'доставлено')
+    );
 
-        render(
-            <Provider store={mockStore}>
-                <MockComponent selectedFilter={null} />
-            </Provider>
-        );
+    expect(result.current.filteredDeliveries).toEqual([
+      {
+        id: '2',
+        status: 'доставлено',
+        createdAt: '2023-01-02',
+        fromAddress: 'Москва',
+        toAddress: 'Новосибирск',
+      },
+      {
+        id: '4',
+        status: 'доставлено',
+        createdAt: '2023-01-04',
+        fromAddress: 'СПб',
+        toAddress: 'Екатеринбург',
+      },
+      {
+        id: '6',
+        status: 'доставлено',
+        createdAt: '2023-01-06',
+        fromAddress: 'Москва',
+        toAddress: 'Томск',
+      },
+    ]);
+    expect(result.current.paginatedDeliveries).toEqual([
+      {
+        id: '2',
+        status: 'доставлено',
+        createdAt: '2023-01-02',
+        fromAddress: 'Москва',
+        toAddress: 'Новосибирск',
+      },
+      {
+        id: '4',
+        status: 'доставлено',
+        createdAt: '2023-01-04',
+        fromAddress: 'СПб',
+        toAddress: 'Екатеринбург',
+      },
+      {
+        id: '6',
+        status: 'доставлено',
+        createdAt: '2023-01-06',
+        fromAddress: 'Москва',
+        toAddress: 'Томск',
+      },
+    ]);
+  });
 
-        // Используем waitFor, чтобы подождать, пока изменения отобразятся
-        await waitFor(() => {
-            // Проверяем, что на второй странице отображаются только оставшиеся доставки
-            expect(screen.getByText('Доставка 6')).toBeInTheDocument();
-            expect(screen.queryByText('Доставка 1')).not.toBeInTheDocument();
-        });
+  it('pagination', () => {
+    (useRouter as jest.Mock).mockReturnValue({
+      query: { page: '2' },
+      push: jest.fn(),
     });
 
-    it('должен фильтровать по статусу', async () => {
-        render(
-            <Provider store={mockStore}>
-                <MockComponent selectedFilter="delivered" />
-            </Provider>
-        );
+    const { result } = renderHook(() =>
+      useFilteredAndPaginatedDeliveries(mockDeliveries, null)
+    );
 
-        // Проверяем, что отображаются только доставки с статусом "delivered"
-        expect(screen.getByText('Доставка 1')).toBeInTheDocument();
-        expect(screen.getByText('Доставка 3')).toBeInTheDocument();
-        expect(screen.getByText('Доставка 5')).toBeInTheDocument();
-
-        // Проверяем, что доставки с другим статусом не отображаются
-        await waitFor(() => {
-            expect(screen.queryByText('Доставка 2')).not.toBeInTheDocument();
-            expect(screen.queryByText('Доставка 4')).not.toBeInTheDocument();
-            expect(screen.queryByText('Доставка 6')).not.toBeInTheDocument();
-        });
-    });
+    expect(result.current.paginatedDeliveries).toEqual([
+      {
+        id: '6',
+        status: 'доставлено',
+        createdAt: '2023-01-06',
+        fromAddress: 'Москва',
+        toAddress: 'Томск',
+      },
+    ]);
+  });
 });

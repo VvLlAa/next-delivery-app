@@ -1,4 +1,3 @@
-import styles from './Table.module.scss'
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -7,30 +6,66 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { Delivery } from '@/type/type';
+import { router } from 'next/client';
+import Button from '@mui/material/Button';
 
-function createData(
-    name: string,
-    calories: number,
-    fat: number,
-    carbs: number,
-    protein: number,
-) {
-    return { name, calories, fat, carbs, protein };
+interface PropsDelivery {
+  deliveries: Delivery[];
 }
 
-const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
+const tableHead: string[] = [
+  'ID доставки',
+  'Статус',
+  'Дата создания',
+  'Адрес отправки',
+  'Адрес доставки',
 ];
 
-export const Table = () => {
+export const BasicTable = ({ deliveries }: PropsDelivery) => {
+  const openCardDeliveries = (item: Delivery) => {
+    router.push(`/delivery/${item.id}`);
+  };
 
-    return (
-        <div className={styles['table']}>
-
-        </div>
-    );
+  return (
+    <div>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              {tableHead.map((item, index) => (
+                <TableCell key={`${item}-${index}`} align="center">
+                  {item}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {deliveries.map((item, index) => (
+              <TableRow
+                key={`${item.id}-${index}`}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell component="th" scope="row" align="center">
+                  {item.id}
+                </TableCell>
+                <TableCell align="center">{item.status}</TableCell>
+                <TableCell align="center">{item.createdAt}</TableCell>
+                <TableCell align="center">{item.fromAddress}</TableCell>
+                <TableCell align="center">{item.toAddress}</TableCell>
+                <TableCell align="center">
+                  <Button
+                    onClick={() => openCardDeliveries(item)}
+                    variant="contained"
+                  >
+                    Подробней
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
+  );
 };
